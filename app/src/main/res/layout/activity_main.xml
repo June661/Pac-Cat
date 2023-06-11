@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/black"
+    tools:context="uriya.madmoni.mygoodpacmanapp.MainActivity"
+    android:touchscreenBlocksFocus="false"
+    >
+
+    <ImageView
+        android:id="@+id/MainMenuImage"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/pacman"
+        android:scaleType="fitXY"
+        />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_alignBottom="@+id/MainMenuImage"
+        android:layout_marginBottom="100dp"
+        android:layout_marginLeft="35dp">
+
+        <Button
+            android:layout_width="175dp"
+            android:layout_height="wrap_content"
+            android:onClick="showPlayActivity"
+            android:text="new Play"
+            android:backgroundTint="@color/colorPrimary"
+            android:textColor="@color/white"
+            android:layout_marginBottom="5dp"/>
+
+    </LinearLayout>
+
+</RelativeLayout>

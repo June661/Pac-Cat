@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "148790799629",
+    "project_id": "mygoodpacmanapp",
+    "storage_bucket": "mygoodpacmanapp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:148790799629:android:1d5e5baf6aa6333dc35444",
+        "android_client_info": {
+          "package_name": "uriya.madmoni.mygoodpacmanapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "148790799629-a6hqb6ki1hmh7kg41q5hppm911dipags.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCLCL7JvAec56PnOURuCUY3lt4fl0HVFT8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "148790799629-a6hqb6ki1hmh7kg41q5hppm911dipags.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
