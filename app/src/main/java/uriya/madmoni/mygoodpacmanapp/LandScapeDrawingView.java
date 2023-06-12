@@ -5,7 +5,6 @@ import static uriya.madmoni.mygoodpacmanapp.MainActivity.CURRENT_USER;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -13,7 +12,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
-import android.os.Looper;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -26,6 +24,8 @@ import androidx.annotation.NonNull;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.Queue;
 
 public class LandScapeDrawingView extends SurfaceView implements Runnable, SurfaceHolder.Callback {
 
@@ -62,7 +62,9 @@ public class LandScapeDrawingView extends SurfaceView implements Runnable, Surfa
 
     int MAX_SCORE = 0;
     int MAX_CIRCLE = 0;
-    final int NUMBER_OF_GHOST = 2; //4
+    final int NUMBER_OF_GHOST = 4; //4
+
+    long startTime;
 
     enum DirectionKey {
         // 0 means going up
@@ -86,6 +88,7 @@ public class LandScapeDrawingView extends SurfaceView implements Runnable, Surfa
         paint = new Paint();
         paint.setColor(Color.WHITE);
         DisplayMetrics metrics = getResources().getDisplayMetrics();
+        startTime = System.currentTimeMillis();
 
         screenHeight = metrics.heightPixels;
         screenWidth = metrics.widthPixels;
@@ -162,7 +165,6 @@ public class LandScapeDrawingView extends SurfaceView implements Runnable, Surfa
                 //add AI
 
 
-
                 //close AI
 
             }
@@ -189,13 +191,66 @@ public class LandScapeDrawingView extends SurfaceView implements Runnable, Surfa
     }
 
     public void moveGhost(Canvas canvas) {
-        short ch;
+        short ch = 0;
+
 
         for (int i = 0; i < NUMBER_OF_GHOST; i++) {
             xDistance[i] = xPosPacman - xPosGhost[i];
             yDistance[i] = yPosPacman - yPosGhost[i];
 
-            if (((xPosGhost[i] )% blockSize == 0) && (yPosGhost[i] % blockSize == 0)) {
+            long currentTime = System.currentTimeMillis();
+            long elapsedTime = currentTime - startTime;
+
+            if (((Math.sqrt(Math.pow(xDistance[i], 2) + Math.pow(yDistance[i], 2))) <= 16 * blockSize)&&((elapsedTime >= 8000))) {
+                moveByQueue(BFS.bfs(),canvas, i, ch);
+                startTime = currentTime;
+            } else {
+                regularMoveGhost(canvas, i, ch);
+            }
+
+
+        }
+    }
+
+    public void moveByQueue (Queue<String> path,Canvas canvas,int i,short ch){
+        if(path == null) {
+            regularMoveGhost(canvas, i, ch);
+        }
+        else{
+            for(int j=0; j<path.size();j++ ){
+                switch (path.poll()){
+                    case "U":
+                        int currY0=yPosGhost[i];
+                        while((currY0-yPosGhost[i])>blockSize){
+                            ghostDirection[i]=0;
+                        }
+                        break;
+                    case "D":
+                        int currY1=yPosGhost[i];
+                        while((yPosGhost[i]-currY1)>blockSize){
+                            ghostDirection[i]=2;
+                        }
+                        break;
+                    case "L":
+                        int currX0=xPosGhost[i];
+                        while((currX0-xPosGhost[i])>blockSize){
+                            ghostDirection[i]=3;
+                        }
+                        break;
+                    case "R":
+                        int currX1=xPosGhost[i];
+                        while((xPosGhost[i]-currX1)>blockSize){
+                            ghostDirection[i]=1;
+                        }
+                        break;
+                }
+            }
+        }
+    }
+
+
+        public void regularMoveGhost (Canvas canvas,int i, short ch){
+            if (((xPosGhost[i]) % blockSize == 0) && (yPosGhost[i] % blockSize == 0)) {
                 try {
                     ch = leveldata1[yPosGhost[i] / blockSize][xPosGhost[i] / blockSize];
                 } catch (Exception e) {
@@ -208,7 +263,7 @@ public class LandScapeDrawingView extends SurfaceView implements Runnable, Surfa
                 if (xPosGhost[i] < 0) {
                     xPosGhost[i] = blockSize * leveldata1[0].length;
                 }
-
+            
 
                 if (xDistance[i] >= 0 && yDistance[i] >= 0) { // Move right and down
                     if ((ch & 4) == 0 && (ch & 8) == 0) {
@@ -284,7 +339,7 @@ public class LandScapeDrawingView extends SurfaceView implements Runnable, Surfa
 
             canvas.drawBitmap(ghostBitmap[i], xPosGhost[i] + (screenWidth / 3), yPosGhost[i], paint);
         }
-    }
+
 
     //Updates the character sprite and handles collisions
     public void movePacman(Canvas canvas) {

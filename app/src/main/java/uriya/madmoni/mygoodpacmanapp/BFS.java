@@ -9,11 +9,11 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 public class BFS {
-    int[][] maze= convertShortToInt( LandScapeDrawingView.leveldata1.clone());
-    int Xghost;
-    int Yghost;
-    int Xpacman;
-    int Ypacman;
+    static int[][] maze= convertShortToInt( LandScapeDrawingView.leveldata1.clone());
+    static int Xghost;
+    static int Yghost;
+    static int Xpacman;
+    static int Ypacman;
     int currentGhost;
 
 
@@ -46,7 +46,7 @@ public class BFS {
 
     //BFS AI FUNCTION MAIN FUNCTION
 
-    public Queue<String> bfs(int[][] maze, int depth) {
+    public static Queue<String> bfs() {
         //receives the initial array (int[][] maze), the location of the current ghost (gamePiece currentGhost), and the number that the ghost is represented by in the array (int ghostNum)
         //returns an updated array after the bfs algorithm was applied (or the random movement functions) and the ghost has moved
         Queue<String> ghostPath=new LinkedList<String>();
@@ -91,68 +91,10 @@ public class BFS {
                 }
 
                 if(!foundMove)
-                    return RegularMove(currentGhost);
-                //todo: RegularMove callback
+                    return new LinkedList<String>();
             }
         }
         nextMoveCheck=lastInQueue(ghostPath);
-
-      /*  switch(nextMoveCheck.charAt(0)) {
-            case 'U':
-                if(Yghost-1>currentGhost.getNorthBorder() && currentGhost.getRow()-1<currentGhost.getSouthBorder() && currentGhost.getCol()>currentGhost.getWestBorder() && currentGhost.getCol()<currentGhost.getEastBorder()) {
-                    if(maze[currentGhost.getRow()-1][currentGhost.getCol()]>=21 && maze[currentGhost.getRow()-1][currentGhost.getCol()]<=24) {
-                        maze[currentGhost.getRow()][currentGhost.getCol()]=1;
-                        maze[currentGhost.getRow()-1][currentGhost.getCol()]=ghostNum;
-                        drawMaze(firstTimeDraw, mazeDrawing, maze);
-                        faceGhost();
-                        currentLocation(maze);
-                        return maze;
-                    }
-                }
-                maze[currentGhost.getRow()-1][currentGhost.getCol()]=ghostNum;
-                break;
-            case 'D':
-                if(currentGhost.getRow()+1>currentGhost.getNorthBorder() && currentGhost.getRow()+1<currentGhost.getSouthBorder() && currentGhost.getCol()>currentGhost.getWestBorder() && currentGhost.getCol()<currentGhost.getEastBorder()) {
-                    if(maze[currentGhost.getRow()+1][currentGhost.getCol()]>=21 && maze[currentGhost.getRow()+1][currentGhost.getCol()]<=24) {
-                        maze[currentGhost.getRow()][currentGhost.getCol()]=1;
-                        maze[currentGhost.getRow()+1][currentGhost.getCol()]=ghostNum;
-                        drawMaze(firstTimeDraw, mazeDrawing, maze);
-                        faceGhost();
-                        currentLocation(maze);
-                        return maze;
-                    }
-                }
-                maze[currentGhost.getRow()+1][currentGhost.getCol()]=ghostNum;
-                break;
-            case 'L':
-                if(currentGhost.getRow()>currentGhost.getNorthBorder() && currentGhost.getRow()<currentGhost.getSouthBorder() && currentGhost.getCol()-1>currentGhost.getWestBorder() && currentGhost.getCol()-1<currentGhost.getEastBorder()) {
-                    if(maze[currentGhost.getRow()][currentGhost.getCol()-1]>=21 && maze[currentGhost.getRow()][currentGhost.getCol()-1]<=24) {
-                        maze[currentGhost.getRow()][currentGhost.getCol()]=1;
-                        maze[currentGhost.getRow()][currentGhost.getCol()-1]=ghostNum;
-                        drawMaze(firstTimeDraw, mazeDrawing, maze);
-                        faceGhost();
-                        currentLocation(maze);
-                        return maze;
-                    }
-                }
-                maze[currentGhost.getRow()][currentGhost.getCol()-1]=ghostNum;
-                break;
-            case 'R':
-                if(currentGhost.getRow()>currentGhost.getNorthBorder() && currentGhost.getRow()<currentGhost.getSouthBorder() && currentGhost.getCol()+1>currentGhost.getWestBorder() && currentGhost.getCol()+1<currentGhost.getEastBorder()) {
-                    if(maze[currentGhost.getRow()][currentGhost.getCol()+1]>=21 && maze[currentGhost.getRow()][currentGhost.getCol()+1]<=24) {
-                        maze[currentGhost.getRow()][currentGhost.getCol()]=1;
-                        maze[currentGhost.getRow()][currentGhost.getCol()+1]=ghostNum;
-                        drawMaze(firstTimeDraw, mazeDrawing, maze);
-                        faceGhost();
-                        currentLocation(maze);
-                        return maze;
-                    }
-                    maze[currentGhost.getRow()][currentGhost.getCol()+1]=ghostNum;
-                    break;
-                }
-        } */
-        //maze[Yghost][Xghost]=1; //after movement- redraws point
-        //currentLocation(maze);
         return ghostPath;
     }
 
@@ -160,7 +102,7 @@ public class BFS {
 
     //BFS AI FUNCTION SUB-FUNCTIONS
 
-    public void pathToLocation(String currentPath) {
+    public static void pathToLocation(String currentPath) {
         //receives path represnted by a string (String currentPath), and the location of the current ghost (gamePiece currentGhost)
         //returns an updated ghost location after it moved by the received path
         for(int i=0; i<currentPath.length(); i++) {
@@ -202,7 +144,7 @@ public class BFS {
         }
     }
 
-    public boolean validMove(int [][] maze, int moveDirection) {
+    public static boolean validMove(int[][] maze, int moveDirection) {
         //receives the initial array (int[][] maze), the location of the current ghost (gamePiece ghostLocation)
         //returns true if the location is valid (inside the ghost borders, and in playable area), otherwise return false
                 switch(moveDirection) {
@@ -224,7 +166,7 @@ public class BFS {
     }
 
 
-    public boolean foundPacMan() {
+    public static boolean foundPacMan() {
         //return true if the location of the ghost is identical to the location of the pacman, otherwise returns false
         return (Xpacman==Xghost)&&(Yghost==Ypacman);
     }
@@ -289,7 +231,7 @@ return 0;
     }
 
 
-    public String lastInQueue(Queue<String> ghostPath) {
+    public static String lastInQueue(Queue<String> ghostPath) {
         //receives String-type Queue
         //returns last String in Queue
         String last="";
