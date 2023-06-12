@@ -1,20 +1,52 @@
 package uriya.madmoni.mygoodpacmanapp;
 
+import static uriya.madmoni.mygoodpacmanapp.LandScapeDrawingView.ghostDirection;
+import static uriya.madmoni.mygoodpacmanapp.LandScapeDrawingView.xPosGhost;
+
+import android.util.Log;
+
 import java.util.LinkedList;
 import java.util.Queue;
 
 public class BFS {
-    short[][] tempMaze=LandScapeDrawingView.leveldata1.clone();
+    int[][] maze= convertShortToInt( LandScapeDrawingView.leveldata1.clone());
+    int Xghost;
+    int Yghost;
+    int Xpacman;
+    int Ypacman;
+    int currentGhost;
 
-    int[][] maze=new int[tempMaze.length][tempMaze[0].length];
-   for(int i =0; i<maze.length; i++){
 
+    public BFS(int CurrentGhost) {
+        Xghost = currentLocationGhost(maze, "X", CurrentGhost);
+        Yghost = currentLocationGhost(maze, "Y", CurrentGhost);
+        Xpacman = currentLocationPacman(maze, "X", LandScapeDrawingView.direction);
+        Ypacman = currentLocationPacman(maze, "Y", LandScapeDrawingView.direction);
+        currentGhost=CurrentGhost;
     }
+
+    public static int[][] convertShortToInt(short[][] shortArray) {
+        int numRows = shortArray.length;
+        int numCols = shortArray[0].length;
+
+        int[][] intArray = new int[numRows][numCols];
+
+        for (int i = 0; i < numRows; i++) {
+            for (int j = 0; j < numCols; j++) {
+                intArray[i][j] = shortArray[i][j];
+            }
+        }
+
+        return intArray;
+    }
+
+
+
 
 
     //BFS AI FUNCTION MAIN FUNCTION
 
-    public int [][] bfs(int[][] maze, int depth, gamePiece currentGhost, int ghostNum) {
+    public Queue<String> bfs(int[][] maze, int depth) {
         //receives the initial array (int[][] maze), the location of the current ghost (gamePiece currentGhost), and the number that the ghost is represented by in the array (int ghostNum)
         //returns an updated array after the bfs algorithm was applied (or the random movement functions) and the ghost has moved
         Queue<String> ghostPath=new LinkedList<String>();
@@ -22,33 +54,52 @@ public class BFS {
         String nextMoveCheck;
         String currentPath = "";
 
-        while(!foundPacMan(pathToLocation(lastInQueue(ghostPath), currentGhost))) {
+        while(!foundPacMan()) {
+            pathToLocation(lastInQueue(ghostPath));
             nextMoveCheck=ghostPath.remove();
+            boolean foundMove = false;
             for(int i=0; i<4; i++) {
                 switch(i) {
                     case 0:
                         currentPath=nextMoveCheck+"U";   // U for up
+                        if (validMove(maze, i)) {
+                            ghostPath.add(currentPath);
+                            foundMove=true;
+                        }
                         break;
                     case 1:
                         currentPath=nextMoveCheck+"D";   // D for down
+                        if (validMove(maze, i)) {
+                            ghostPath.add(currentPath);
+                            foundMove=true;
+                        }
                         break;
                     case 2:
                         currentPath=nextMoveCheck+"L";   // L for left
+                        if (validMove(maze, i)) {
+                            ghostPath.add(currentPath);
+                            foundMove=true;
+                        }
                         break;
                     case 3:
                         currentPath=nextMoveCheck+"R";   // R for right
+                        if (validMove(maze, i)) {
+                            ghostPath.add(currentPath);
+                            foundMove=true;
+                        }
                         break;
                 }
-                if (validMove(maze, pathToLocation(currentPath, currentGhost)))
-                    ghostPath.add(currentPath);
-                else if(lastInQueue(ghostPath).length()>=depth)
-                    return moveRandom(maze, currentGhost, ghostNum);
+
+                if(!foundMove)
+                    return RegularMove(currentGhost);
+                //todo: RegularMove callback
             }
         }
         nextMoveCheck=lastInQueue(ghostPath);
-        switch(nextMoveCheck.charAt(0)) {
+
+      /*  switch(nextMoveCheck.charAt(0)) {
             case 'U':
-                if(currentGhost.getRow()-1>currentGhost.getNorthBorder() && currentGhost.getRow()-1<currentGhost.getSouthBorder() && currentGhost.getCol()>currentGhost.getWestBorder() && currentGhost.getCol()<currentGhost.getEastBorder()) {
+                if(Yghost-1>currentGhost.getNorthBorder() && currentGhost.getRow()-1<currentGhost.getSouthBorder() && currentGhost.getCol()>currentGhost.getWestBorder() && currentGhost.getCol()<currentGhost.getEastBorder()) {
                     if(maze[currentGhost.getRow()-1][currentGhost.getCol()]>=21 && maze[currentGhost.getRow()-1][currentGhost.getCol()]<=24) {
                         maze[currentGhost.getRow()][currentGhost.getCol()]=1;
                         maze[currentGhost.getRow()-1][currentGhost.getCol()]=ghostNum;
@@ -99,125 +150,144 @@ public class BFS {
                     maze[currentGhost.getRow()][currentGhost.getCol()+1]=ghostNum;
                     break;
                 }
-        }
-        maze[currentGhost.getRow()][currentGhost.getCol()]=1;
-        currentLocation(maze);
-        return maze;
+        } */
+        //maze[Yghost][Xghost]=1; //after movement- redraws point
+        //currentLocation(maze);
+        return ghostPath;
     }
 
 
 
     //BFS AI FUNCTION SUB-FUNCTIONS
 
-    public gamePiece pathToLocation(String currentPath, gamePiece currentGhost) {
+    public void pathToLocation(String currentPath) {
         //receives path represnted by a string (String currentPath), and the location of the current ghost (gamePiece currentGhost)
         //returns an updated ghost location after it moved by the received path
-        gamePiece ghostLocation= new gamePiece(currentGhost.getRow(), currentGhost.getCol(), 0, 22, 0, 16);
         for(int i=0; i<currentPath.length(); i++) {
             switch(currentPath.charAt(i)) {
                 case 'U':
-                    ghostLocation.setRow(ghostLocation.getRow()-1);
+                    Yghost--;
                     break;
                 case 'D':
-                    ghostLocation.setRow(ghostLocation.getRow()+1);
+                    Yghost++;
                     break;
                 case 'L':
-                    ghostLocation.setCol(ghostLocation.getCol()-1);
+                    Xghost--;
                     break;
                 case 'R':
-                    ghostLocation.setCol(ghostLocation.getCol()+1);
+                    Xghost++;
                     break;
             }
         }
-        return ghostLocation;
     }
 
-    public boolean validMove(int [][] maze, gamePiece ghostLocation) {
-        //receives the initial array (int[][] maze), the location of the current ghost (gamePiece ghostLocation)
-        //returns true if the location is valid (inside the ghost borders, and in playable area), otherwise return false
-        if(!(ghostLocation.getRow()>ghostLocation.getNorthBorder() && ghostLocation.getRow()<ghostLocation.getSouthBorder()))
-            return false;
-        if(!(ghostLocation.getCol()>ghostLocation.getWestBorder() && ghostLocation.getCol()<ghostLocation.getEastBorder()))
-            return false;
-        for (int col = 0; col < 17; col++) {
-            for (int row = 0; row < 23; row++) {
-                switch(maze[ghostLocation.getRow()][ghostLocation.getCol()]) {
-                    case 0:         // can't go through walls
-                        return false;
-                    case 2:         // can't exit game field
-                        return false;
-                    case 4:         // can't go through teleport
-                        return false;
-                    case 5:         // can't go through teleport
-                        return false;
-                    case 6:         // can't go through teleport
-                        return false;
-                    case 7:         // can't go through teleport
-                        return false;
-                }
+    public void moveToLocation(String currentPath) {
+        //receives path represnted by a string (String currentPath), and the location of the current ghost (gamePiece currentGhost)
+        //returns an updated ghost location after it moved by the received path
+        for(int i=0; i<currentPath.length(); i++) {
+            switch(currentPath.charAt(i)) {
+                case 'U':
+                    Yghost--;
+                    break;
+                case 'D':
+                    Yghost++;
+                    break;
+                case 'L':
+                    Xghost--;
+                    break;
+                case 'R':
+                    Xghost++;
+                    break;
             }
         }
+    }
+
+    public boolean validMove(int [][] maze, int moveDirection) {
+        //receives the initial array (int[][] maze), the location of the current ghost (gamePiece ghostLocation)
+        //returns true if the location is valid (inside the ghost borders, and in playable area), otherwise return false
+                switch(moveDirection) {
+                    case 2:         // left
+                        if ((maze[Xghost][Yghost] & 1) != 0){
+                        return false;}
+                    case 0:         // up
+                        if ((maze[Xghost][Yghost] & 2) != 0){
+                        return false;}
+                    case 3:         // right
+                        if ((maze[Xghost][Yghost] & 4) != 0){
+                        return false;}
+                    case 1:         // down
+                        if ((maze[Xghost][Yghost] & 8) != 0){
+                        return false;}
+                }
+
         return true;
     }
 
-    public int[][] moveRandom(int[][] maze, gamePiece ghostLocation, int ghostNum){
-        //receives the initial array (int[][] maze), the location of the current ghost (gamePiece ghostLocation), and the number that the ghost is represented by in the array (int ghostNum)
-        //return an updated array after the current ghost made a random (and valid) move
-        Random random=new Random();
-        boolean hasMoved=true;
-        while(hasMoved) {
-            switch(random.nextInt(4)) {
-                case 0:     // move up
-                    if(validMove(maze, ghostLocation.up())) {
-                        maze[ghostLocation.getRow()][ghostLocation.getCol()]=1;
-                        maze[ghostLocation.getRow()-1][ghostLocation.getCol()]=ghostNum;
-                        hasMoved=false;
-                        break;
-                    }
-                    break;
-                case 1:     // move down
-                    if(validMove(maze, ghostLocation.down())) {
-                        maze[ghostLocation.getRow()][ghostLocation.getCol()]=1;
-                        maze[ghostLocation.getRow()+1][ghostLocation.getCol()]=ghostNum;
-                        hasMoved=false;
-                        break;
-                    }
-                    break;
-                case 2:     // move right
-                    if(validMove(maze, ghostLocation.right())) {
-                        maze[ghostLocation.getRow()][ghostLocation.getCol()]=1;
-                        maze[ghostLocation.getRow()][ghostLocation.getCol()+1]=ghostNum;
-                        hasMoved=false;
-                        break;
-                    }
-                    break;
-                case 3:     // move left
-                    if(validMove(maze, ghostLocation.left())) {
-                        maze[ghostLocation.getRow()][ghostLocation.getCol()]=1;
-                        maze[ghostLocation.getRow()][ghostLocation.getCol()-1]=ghostNum;
-                        hasMoved=false;
-                        break;
-                    }
-                    break;
+
+    public boolean foundPacMan() {
+        //return true if the location of the ghost is identical to the location of the pacman, otherwise returns false
+        return (Xpacman==Xghost)&&(Yghost==Ypacman);
+    }
+
+    public int currentLocationPacman(int[][] maze, String s, int direction) {
+        //receives the initial array (int [][] maze) and their absolute locations
+        //the function sets pacmans location as the closest in-direction cell in the clone maze
+    if (s.equals("Y")){
+    switch (direction){
+        case 2:
+            return (LandScapeDrawingView.yPosPacman-(LandScapeDrawingView.yPosPacman%LandScapeDrawingView.blockSize))/LandScapeDrawingView.blockSize;
+        case 1:
+        case 3:
+            return LandScapeDrawingView.yPosPacman/LandScapeDrawingView.blockSize;
+        case 4:
+            return ((LandScapeDrawingView.yPosPacman-(LandScapeDrawingView.yPosPacman%LandScapeDrawingView.blockSize))/LandScapeDrawingView.blockSize)+1;
+    }
+        }
+    else if (s.equals("X")){
+        switch (direction){
+        case 1:
+            return (LandScapeDrawingView.xPosPacman-(LandScapeDrawingView.xPosPacman%LandScapeDrawingView.blockSize))/LandScapeDrawingView.blockSize;
+        case 2:
+            case 4:
+                return LandScapeDrawingView.xPosPacman/LandScapeDrawingView.blockSize;
+        case 3:
+            return ((LandScapeDrawingView.xPosPacman-(LandScapeDrawingView.xPosPacman%LandScapeDrawingView.blockSize))/LandScapeDrawingView.blockSize)+1;
+        } }
+    else
+    Log.i("BFS", "currentLocationP: :(((((");
+return 0;
+    }
+
+
+    public int currentLocationGhost(int[][] maze, String s, int currentGhost) {
+        //receives the initial array (int [][] maze) and their absolute locations
+        //the function sets the ghosts location as the closest in-direction cell in the clone maze
+        if (s.equals("Y")){
+            switch (ghostDirection[currentGhost]){
+                case 2:
+                    return (LandScapeDrawingView.yPosGhost[currentGhost]-(LandScapeDrawingView.yPosGhost[currentGhost]%LandScapeDrawingView.blockSize))/LandScapeDrawingView.blockSize;
+                case 1:
+                case 3:
+                    return LandScapeDrawingView.yPosGhost[currentGhost]/LandScapeDrawingView.blockSize;
+                case 4:
+                    return ((LandScapeDrawingView.yPosGhost[currentGhost]-(LandScapeDrawingView.yPosGhost[currentGhost]%LandScapeDrawingView.blockSize))/LandScapeDrawingView.blockSize)+1;
             }
         }
-        //System.out.println("random move");
-        currentLocation(maze);
-        return maze;
+        else if (s.equals("X")){
+            switch (ghostDirection[currentGhost]){
+                case 1:
+                    return (xPosGhost[currentGhost]-(xPosGhost[currentGhost]%LandScapeDrawingView.blockSize))/LandScapeDrawingView.blockSize;
+                case 2:
+                case 4:
+                    return xPosGhost[currentGhost]/LandScapeDrawingView.blockSize;
+                case 3:
+                    return ((xPosGhost[currentGhost]-(xPosGhost[currentGhost]%LandScapeDrawingView.blockSize))/LandScapeDrawingView.blockSize)+1;
+            } }
+        else
+            Log.i("BFS", "currentLocationG: :((((((((((((((((");
+        return 0;
     }
 
-    public boolean foundPacMan(gamePiece ghostLocation) {
-        //receives the location of the current ghost
-        //return true if the location of the ghost is identical to the location of the pacman, otherwise returns false
-        return (ghostLocation.getRow()==pacmanPos.getRow() && ghostLocation.getCol()==pacmanPos.getCol());
-    }
-
-    public void currentLocation(int[][] maze) {
-        //receives the initial array (int [][] maze) and their absolute locations
-        //the function sets the ghosts and pacmans location as the closest in-direction cell in the clone maze
-
-
-    }
 
     public String lastInQueue(Queue<String> ghostPath) {
         //receives String-type Queue

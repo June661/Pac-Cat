@@ -41,19 +41,19 @@ public class LandScapeDrawingView extends SurfaceView implements Runnable, Surfa
     private int currentPacmanFrame = 0;     // Current Pacman frame to draw
     private int currentArrowFrame = 0;      // Current arrow frame to draw
     private long frameTicker;               // Current time since last frame has been drawn
-    private int xPosPacman;                 // x-axis position of pacman
-    private int yPosPacman;                 // y-axis position of pacman
-    private int[] xPosGhost = new int[4];                  // x-axis position of ghost
-    private int[] yPosGhost = new int[4];                  // y-axis position of ghost
+    public static int xPosPacman;                 // x-axis position of pacman
+    public static int yPosPacman;                 // y-axis position of pacman
+    public static int[] xPosGhost = new int[4];                  // x-axis position of ghost
+    public static int[] yPosGhost = new int[4];                  // y-axis position of ghost
     int[] xDistance = new int[4];
     int[] yDistance = new int[4];
     private float x1, x2, y1, y2;           // Initial/Final positions of swipe
-    private int direction = 4;              // Direction of the swipe, initial direction is right
+    public static int direction = 4;              // Direction of the swipe, initial direction is right
     private int nextDirection = 4;          // Buffer for the next direction you choose
     private int viewDirection = 2;          // Direction that pacman is facing
-    private int[] ghostDirection;
+    public static int[] ghostDirection;
     private int screenHeight, screenWidth;                // Width of the phone screen
-    private int blockSize;                  // Size of a block on the map
+    public static int blockSize;                  // Size of a block on the map
     private int currentScore = 0;           //Current game score
 
     final int DIVIDE_HEIGHT = 21;
@@ -429,14 +429,14 @@ public class LandScapeDrawingView extends SurfaceView implements Runnable, Surfa
             case (MotionEvent.ACTION_DOWN): {
                 x1 = event.getX();
                 y1 = event.getY();
-                // todo pause handler.postDelayed(longPressed, LONG_PRESS_TIME);
+                // todo: pause handler.postDelayed(longPressed, LONG_PRESS_TIME);
                 break;
             }
             case (MotionEvent.ACTION_UP): {
                 x2 = event.getX();
                 y2 = event.getY();
                 calculateSwipeDirection();
-                // todo pause handler.removeCallbacks(longPressed);
+                // todo: pause handler.removeCallbacks(longPressed);
                 break;
             }
         }
@@ -499,6 +499,7 @@ public class LandScapeDrawingView extends SurfaceView implements Runnable, Surfa
         }
 
         if (isPacmanGetTouched()) {
+            //todo: add death animation
             lifeManager.removeLife();
             xPosPacman = 8 * blockSize;
             yPosPacman = 13 * blockSize;
