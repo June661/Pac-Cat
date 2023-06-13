@@ -2,6 +2,8 @@ package uriya.madmoni.mygoodpacmanapp;
 
 import static uriya.madmoni.mygoodpacmanapp.MainActivity.CURRENT_USER;
 
+
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -12,6 +14,10 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -27,7 +33,7 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.Queue;
 
-public class LandScapeDrawingView extends SurfaceView implements Runnable, SurfaceHolder.Callback {
+public class LandScapeDrawingView extends SurfaceView implements Runnable, SurfaceHolder.Callback, SensorEventListener {
 
     private Activity activity;
     private Thread thread;
@@ -65,6 +71,12 @@ public class LandScapeDrawingView extends SurfaceView implements Runnable, Surfa
     final int NUMBER_OF_GHOST = 4; //4
 
     long startTime;
+
+    private SensorManager sensorManager;
+    private Sensor sensor;
+
+    boolean tiltEnabled=false;
+
 
     enum DirectionKey {
         // 0 means going up
@@ -118,10 +130,13 @@ public class LandScapeDrawingView extends SurfaceView implements Runnable, Surfa
                 new Place(200, 150),
                 new Place(300, 150));
 
+
+
         loadBitmapImages();
         Log.i("info", "Constructor");
 
-
+        sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
+        sensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
     }
 
     @Override
@@ -155,6 +170,8 @@ public class LandScapeDrawingView extends SurfaceView implements Runnable, Surfa
                             lifeManager.getPlace(i).getX(),
                             lifeManager.getPlace(i).getY(),
                             paint);
+
+                //todo: add ppause and control buttons here
 
                 holder.unlockCanvasAndPost(canvas);
 
@@ -530,6 +547,37 @@ public class LandScapeDrawingView extends SurfaceView implements Runnable, Surfa
         }
     }
 
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        if(tiltEnabled){
+        float x = event.values[0];
+        float y = event.values[1];
+        if (Math.abs(x) > Math.abs(y)) {
+            if (x < 0) {
+                nextDirection = DirectionKey.UP.ordinal();
+            }
+            if (x > 0) {
+                nextDirection = DirectionKey.DOWN.ordinal();
+            }
+        } else {
+            if (y < 0) {
+                nextDirection = DirectionKey.LEFT.ordinal();
+            }
+            if (y > 0) {
+                nextDirection = DirectionKey.RIGHT.ordinal();
+            }
+        }
+        if (x > (-2) && x < (2) && y > (-2) && y < (2)) {
+            direction=4;
+        }
+    }}
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int i) {
+        //todo: ???
+    }
+
     // Check to see if we should update the current frame
     // based on time passed so the animation won't be too
     // quick and look bad
@@ -665,12 +713,14 @@ public class LandScapeDrawingView extends SurfaceView implements Runnable, Surfa
     }
 
     public void pause() {
+        sensorManager.unregisterListener(this);
         Log.i("info", "pause");
         canDraw = false;
         thread = null;
     }
 
     public void resume() {
+        sensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_NORMAL);
         Log.i("info", "resume");
         if (thread != null) {
             thread.start();

@@ -53,6 +53,18 @@
             android:screenOrientation="landscape"
             />
 
+
+        <receiver android:name="internetBR"
+            android:exported="true">
+
+            <intent-filter>
+
+                <action android:name="android.net.wifi.WIFI_STATE_CHANGED" />
+            </intent-filter>
+
+        </receiver>
+
+
         <service android:name=".BackgroundMusicService" />
     </application>
 

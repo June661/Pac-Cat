@@ -80,7 +80,7 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                 else authHelper.register(etEmail.getText().toString().trim(),etPassword.getText().toString().trim(),etUserName.getText().toString().trim(),rememberLogin);
                 break;
             case R.id.tvForgetPassword:
-
+//todo: forgot password
                 break;
             case R.id.tvSwitchCase:
                 switchCase();

@@ -7,8 +7,16 @@
     tools:context=".BestPlayerActivity"
     android:orientation="vertical">
 
+    <TextView
+        android:id="@+id/textView333"
+        android:textSize="20sp"
+        android:textColor="@color/black"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvBestPlayer"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent" />
 </LinearLayout>

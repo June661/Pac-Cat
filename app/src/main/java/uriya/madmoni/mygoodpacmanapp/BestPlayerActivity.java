@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
+import android.widget.TextView;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -17,6 +18,7 @@ import java.util.HashMap;
 
 public class BestPlayerActivity extends AppCompatActivity {
 
+    TextView tv;
     RecyclerView rvBestPlayer;
     ArrayList<FirebasePlayer> playersList;
 
@@ -27,6 +29,16 @@ public class BestPlayerActivity extends AppCompatActivity {
 
         initWidgets();
         retrieveData();
+
+        tv=findViewById(R.id.textView333);
+        if(internetBR.internetAv){
+            tv.setText("internet connected: list updated");
+        }
+        else{
+            tv.setText("internet disconnected: list might not be up-to-date");
+
+        }
+
     }
 
     public void initWidgets() {
