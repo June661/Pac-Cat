@@ -54,7 +54,7 @@
             />
 
 
-        <receiver android:name="internetBR"
+        <receiver android:name="InternetBR"
             android:exported="true">
 
             <intent-filter>
