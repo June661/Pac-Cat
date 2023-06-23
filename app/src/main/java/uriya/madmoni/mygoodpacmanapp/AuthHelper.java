@@ -37,7 +37,7 @@ public class AuthHelper {
 
 
     public void login(String email, String password, boolean rememberLogin) {
-        if(!internetBR.internetAv){
+        if(!InternetBR.internetAv){
             Toast.makeText(activity, "internet unavailable", Toast.LENGTH_SHORT).show();
             Log.i("TAG", "login: reciever found no internet connection");
         }
@@ -86,7 +86,7 @@ public class AuthHelper {
     }
 
     public void register(String email, String password, String userName, boolean rememberRegister) {
-        if(!internetBR.internetAv){
+        if(!InternetBR.internetAv){
             Toast.makeText(activity, "internet unavailable", Toast.LENGTH_SHORT).show();
             Log.i("TAG", "register: reciever found no internet connection");
         }

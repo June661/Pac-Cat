@@ -31,7 +31,7 @@ public class BestPlayerActivity extends AppCompatActivity {
         retrieveData();
 
         tv=findViewById(R.id.textView333);
-        if(internetBR.internetAv){
+        if(InternetBR.internetAv){
             tv.setText("internet connected: list updated");
         }
         else{
