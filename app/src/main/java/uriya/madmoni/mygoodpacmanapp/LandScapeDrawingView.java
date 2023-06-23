@@ -68,7 +68,7 @@ public class LandScapeDrawingView extends SurfaceView implements Runnable, Surfa
 
     int MAX_SCORE = 0;
     int MAX_CIRCLE = 0;
-    final int NUMBER_OF_GHOST = 4; //4
+    final int NUMBER_OF_GHOST = 1; //4
 
     long startTime;
 
@@ -218,8 +218,9 @@ public class LandScapeDrawingView extends SurfaceView implements Runnable, Surfa
             long currentTime = System.currentTimeMillis();
             long elapsedTime = currentTime - startTime;
 
-            if (((Math.sqrt(Math.pow(xDistance[i], 2) + Math.pow(yDistance[i], 2))) <= 16 * blockSize)&&((elapsedTime >= 8000))) {
-                moveByQueue(BFS.bfs(),canvas, i, ch);
+            if (((Math.sqrt(Math.pow(xDistance[i], 2) + Math.pow(yDistance[i], 2))) <= 8 * blockSize)&&((elapsedTime >= 8000))) {
+                BFS bfsInstance = new BFS(i);
+                moveByQueue(bfsInstance.bfs(),canvas, i, ch);
                 startTime = currentTime;
             } else {
                 regularMoveGhost(canvas, i, ch);

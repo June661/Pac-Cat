@@ -9,23 +9,24 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 public class BFS {
-    static int[][] maze= convertShortToInt( LandScapeDrawingView.leveldata1.clone());
-    static int Xghost;
-    static int Yghost;
-    static int Xpacman;
-    static int Ypacman;
+    int[][] maze= convertShortToInt( LandScapeDrawingView.leveldata1.clone());
+    int Xghost;
+    int Yghost;
+    int Xpacman;
+    int Ypacman;
     int currentGhost;
 
 
     public BFS(int CurrentGhost) {
-        Xghost = currentLocationGhost(maze, "X", CurrentGhost);
-        Yghost = currentLocationGhost(maze, "Y", CurrentGhost);
-        Xpacman = currentLocationPacman(maze, "X", LandScapeDrawingView.direction);
-        Ypacman = currentLocationPacman(maze, "Y", LandScapeDrawingView.direction);
+        this.Xghost = currentLocationGhost(maze, "X", CurrentGhost);
+        this.Yghost = currentLocationGhost(maze, "Y", CurrentGhost);
+        this.Xpacman = currentLocationPacman(maze, "X", LandScapeDrawingView.direction);
+        this.Ypacman = currentLocationPacman(maze, "Y", LandScapeDrawingView.direction);
         currentGhost=CurrentGhost;
+
     }
 
-    public static int[][] convertShortToInt(short[][] shortArray) {
+    public int[][] convertShortToInt(short[][] shortArray) {
         int numRows = shortArray.length;
         int numCols = shortArray[0].length;
 
@@ -46,7 +47,7 @@ public class BFS {
 
     //BFS AI FUNCTION MAIN FUNCTION
 
-    public static Queue<String> bfs() {
+    public Queue<String> bfs() {
         //receives the initial array (int[][] maze), the location of the current ghost (gamePiece currentGhost), and the number that the ghost is represented by in the array (int ghostNum)
         //returns an updated array after the bfs algorithm was applied (or the random movement functions) and the ghost has moved
         Queue<String> ghostPath=new LinkedList<String>();
@@ -55,6 +56,7 @@ public class BFS {
         String currentPath = "";
 
         while(!foundPacMan()) {
+
             pathToLocation(lastInQueue(ghostPath));
             nextMoveCheck=ghostPath.remove();
             boolean foundMove = false;
@@ -89,12 +91,18 @@ public class BFS {
                         }
                         break;
                 }
-
                 if(!foundMove)
-                    return new LinkedList<String>();
+                    Log.i("debug - path", ghostPath.toString());
+
+                return ghostPath;
             }
+
+            Log.i("debug - found pac", String.valueOf(foundPacMan()));
+            Log.i("debug - path", ghostPath.toString());
+
         }
         nextMoveCheck=lastInQueue(ghostPath);
+        Log.i("debug - return path", ghostPath.toString());
         return ghostPath;
     }
 
@@ -102,22 +110,22 @@ public class BFS {
 
     //BFS AI FUNCTION SUB-FUNCTIONS
 
-    public static void pathToLocation(String currentPath) {
+    public void pathToLocation(String currentPath) {
         //receives path represnted by a string (String currentPath), and the location of the current ghost (gamePiece currentGhost)
         //returns an updated ghost location after it moved by the received path
         for(int i=0; i<currentPath.length(); i++) {
             switch(currentPath.charAt(i)) {
                 case 'U':
-                    Yghost--;
+                    this.Yghost--;
                     break;
                 case 'D':
-                    Yghost++;
+                    this.Yghost++;
                     break;
                 case 'L':
-                    Xghost--;
+                    this.Xghost--;
                     break;
                 case 'R':
-                    Xghost++;
+                    this.Xghost++;
                     break;
             }
         }
@@ -129,46 +137,53 @@ public class BFS {
         for(int i=0; i<currentPath.length(); i++) {
             switch(currentPath.charAt(i)) {
                 case 'U':
-                    Yghost--;
+                    this.Yghost--;
                     break;
                 case 'D':
-                    Yghost++;
+                    this.Yghost++;
                     break;
                 case 'L':
-                    Xghost--;
+                    this.Xghost--;
                     break;
                 case 'R':
-                    Xghost++;
+                    this.Xghost++;
                     break;
             }
         }
     }
 
-    public static boolean validMove(int[][] maze, int moveDirection) {
+    public boolean validMove(int[][] maze, int moveDirection) {
         //receives the initial array (int[][] maze), the location of the current ghost (gamePiece ghostLocation)
         //returns true if the location is valid (inside the ghost borders, and in playable area), otherwise return false
-                switch(moveDirection) {
-                    case 2:         // left
-                        if ((maze[Xghost][Yghost] & 1) != 0){
+
+        try {
+            switch(moveDirection) {
+                case 2:         // left
+                    if ((maze[Xghost][Yghost] & 1) != 0){
                         return false;}
-                    case 0:         // up
-                        if ((maze[Xghost][Yghost] & 2) != 0){
+                case 0:         // up
+                    if ((maze[Xghost][Yghost] & 2) != 0){
                         return false;}
-                    case 3:         // right
-                        if ((maze[Xghost][Yghost] & 4) != 0){
+                case 3:         // right
+                    if ((maze[Xghost][Yghost] & 4) != 0){
                         return false;}
-                    case 1:         // down
-                        if ((maze[Xghost][Yghost] & 8) != 0){
+                case 1:         // down
+                    if ((maze[Xghost][Yghost] & 8) != 0){
                         return false;}
-                }
+            }
+        } catch (Exception e) {
+            Log.i("debug exeption", e.getMessage());
+            return false;
+        }
+
 
         return true;
     }
 
 
-    public static boolean foundPacMan() {
+    public boolean foundPacMan() {
         //return true if the location of the ghost is identical to the location of the pacman, otherwise returns false
-        return (Xpacman==Xghost)&&(Yghost==Ypacman);
+        return (this.Xpacman==this.Xghost)&&(this.Yghost==this.Ypacman);
     }
 
     public int currentLocationPacman(int[][] maze, String s, int direction) {
@@ -231,7 +246,7 @@ return 0;
     }
 
 
-    public static String lastInQueue(Queue<String> ghostPath) {
+    public String lastInQueue(Queue<String> ghostPath) {
         //receives String-type Queue
         //returns last String in Queue
         String last="";
